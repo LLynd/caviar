@@ -6,7 +6,7 @@ V = typing.TypeVar('V')
 
 
 def makeOrderedDict(unordered: typing.Dict[K, V], order: typing.Iterable[K]) \
-        -> typing.OrderedDict[K, V]:
+        -> 'OrderedDict[K, V]':
     result = OrderedDict()
     for key in order:
         result[key] = unordered[key]

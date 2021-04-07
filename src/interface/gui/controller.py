@@ -41,7 +41,7 @@ class Controller:
         pygame.init()
         self.width = self.simulator.road.length * self.SIZE
         self.height = self.simulator.road.sublanesCount * self.SIZE
-        self.screen = pygame.display.set_mode((self.width, self.height))
+        self.screen = pygame.display.set_mode((self.width, self.height + self.STATS_SIZE))
         pygame.display.set_caption('CAViar', 'CAViar')
 
     def run(self, speed: float = 100., refresh: int = 60, buffer: int = 1) -> None:
@@ -130,7 +130,7 @@ class Controller:
             'Steps={steps} | Velocity={velocity:.2f} | '
             'Conventional Velocity={velocity_conventional:.2f} | '
             'Autonomous Velocity={velocity_autonomous:.2f}'.format(
-                **withOptionalFormat(statistics)), True, CL_TEXT)
+                **withOptionalFormat(statistics)), True, (0, 0, 0))
         rect = text.get_rect()
         rect.center = (self.width // 2, self.height + self.STATS_SIZE // 2)
         self.screen.blit(text, rect)
