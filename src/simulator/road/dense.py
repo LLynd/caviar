@@ -17,7 +17,7 @@ class DenseRoad(Road):
 
     def __init__(self, length: int, lanes_count: int, lane_width: int,
                  controller: typing.Optional[SpeedController] = None):
-        super().__init__(length, lanes_count, lane_width, controller=controller)
+        super().__init__(length, lanes_count, lane_width=1, controller=controller)
         self.lanes = [self._emptyLane() for _ in range(self.sublanesCount)]
         self.pending_lanes = [self._emptyLane() for _ in range(self.sublanesCount)]
 

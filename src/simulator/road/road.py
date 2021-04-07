@@ -12,7 +12,6 @@ class Road:
     # Road options.
     length: int
     lanes_count: int
-    lane_width: int
 
     removed: typing.List[Vehicle]
     emergency: typing.Set[Vehicle]
@@ -21,7 +20,7 @@ class Road:
                  controller: typing.Optional[SpeedController] = None):
         self.length = length
         self.lanes_count = lanes_count
-        self.lane_width = lane_width
+        self.lane_width = 1
         self.controller = controller if controller is not None else SpeedController()
         self.removed = list()
         self.emergency = set()
