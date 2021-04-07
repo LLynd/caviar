@@ -16,11 +16,12 @@ class Road:
     removed: typing.List[Vehicle]
     emergency: typing.Set[Vehicle]
 
-    def __init__(self, length: int, lanes_count: int, lane_width: int,
+    def __init__(self, length: int, lanes_count: int, lane_width: int, emergency_lane: int,
                  controller: typing.Optional[SpeedController] = None):
         self.length = length
         self.lanes_count = lanes_count
         self.lane_width = 1
+        self.emergency_lane = emergency_lane
         self.controller = controller if controller is not None else SpeedController()
         self.removed = list()
         self.emergency = set()
@@ -39,7 +40,7 @@ class Road:
         Returns the index of an emergency sub-lane start.
         :return: index of an emergency sub-lane.
         '''
-        return self.lane_width
+        return self.emergency_lane
 
     def getRelativePosition(self, position: Position) -> Position:
         '''

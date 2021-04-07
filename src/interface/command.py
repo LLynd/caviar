@@ -26,6 +26,7 @@ def configProvider(file_path: str, cmd: str) -> typing.Dict[str, typing.Any]:
 # Road options.
 @click.option('--length', default=100, help='Road length')
 @click.option('--lanes', default=6, help='Number of lanes')
+@click.option('--emergency-lane', default=0, help='Lane of emergency corridor')
 # Speed controller options.
 @click.option('--max-speed', default=5, help='Road maximum speed')
 @click.option('--obstacles', multiple=True, default=[], type=ObstacleParamType())
@@ -49,6 +50,7 @@ def command(ctx: click.Context, **kwargs) -> None:
     # Extract options.
     length: int = kwargs['length']
     lanes: int = kwargs['lanes']
+    emergency_lane: int = kwargs["emergency_lane"]
     max_speed: int = kwargs['max_speed']
     density: float = kwargs['density']
     dispatch: int = kwargs['dispatch']
@@ -67,7 +69,7 @@ def command(ctx: click.Context, **kwargs) -> None:
     # Create a road.
     speed_controller = SpeedController(max_speed=max_speed)
     road = DenseRoad(
-        length=length, lanes_count=lanes, lane_width=1, controller=speed_controller)
+        length=length, lanes_count=lanes, lane_width=1, emergency_lane=emergency_lane, controller=speed_controller)
     # Add obstacles.
     for obstacle in obstacles:
         addObstacle(road=road, obstacle=obstacle)
