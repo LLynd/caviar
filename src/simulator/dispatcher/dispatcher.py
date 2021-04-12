@@ -36,11 +36,3 @@ class Dispatcher:
             # Add the vehicle.
             self.road.addVehicle(vehicle=vehicle)
             self.remaining -= 1
-
-    def _newVehicle(self, position: Position) -> Vehicle:
-        '''
-        Generates new vehicle at a given position.
-        :param position: vehicle position.
-        :return: new vehicle.
-        '''
-        raise NotImplementedError

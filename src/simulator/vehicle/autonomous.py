@@ -7,6 +7,7 @@ from util.rand import shuffled
 
 
 class AutonomousCar(Car):
+    BlockedLane = None
     def __init__(self, position: Position, velocity: int, road: Road,
                  length: int = 1, width: int = 1, limit: int = 0):
         super().__init__(
@@ -19,14 +20,21 @@ class AutonomousCar(Car):
         self.position = x + self.velocity, lane
         return self.position
 
+    @classmethod
+    def updateBlockedLane(cls, value: int):
+        cls.BlockedLane = value
+
     def _tryAvoidObstacle(self) -> bool:
         x, lane = self.position
         vx, vehicle = self.road.getNextVehicle(position=self.position)
-        if vehicle is None or not isinstance(vehicle, Obstacle):
+        if vehicle is None or not isinstance(vehicle, Obstacle) and lane != self.BlockedLane:
             return False
-        if vx - x > max(self.velocity, 1):
+        if vx - x > max(self.velocity, 1) and lane != self.BlockedLane:
             return False
-        # Find the best lane change.
+        else:
+            if self.BlockedLane == None:
+                self.updateBlockedLane(lane)
+                print(type(self.BlockedLane))
         best_change = 0
         best_limit = self._getMaxSpeed(position=self.position)
         for change in shuffled([-self.road.lane_width, self.road.lane_width]):
@@ -42,6 +50,15 @@ class AutonomousCar(Car):
             self.position = destination
             return True
         return False
+
+    def _tryAvoidBlockedLane(self) -> bool:
+        x, lane = self.position
+        if lane == self.BlockedLane:
+            for change in shuffled([-self.road.lane_width, self.road.lane_width]):
+                destination = (x, lane + change)
+                if self._isChangePossible(destination) == True and self._isChangeSafe(destination) == True:
+                    self.position = (x, lane + change)
+                    return True
 
     def _tryChangeEmergency(self) -> bool:
         '''
@@ -84,7 +101,7 @@ class AutonomousCar(Car):
                 limit = self._getMaxSpeed(position=destination)
                 if limit > best_limit:
                     best_change, best_limit = change, limit
-        if best_change != 0:
+        if best_change != 0 and lane + best_change != self.BlockedLane:
             self.position = (x, lane + best_change)
             return True
         return False

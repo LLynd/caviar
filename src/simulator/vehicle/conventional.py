@@ -48,6 +48,10 @@ class ConventionalCar(Car):
         self.position = x + self.velocity, lane
         return self.position
 
+    def _tryAvoidBlockedLane(self) -> bool:
+        #to jest placeholder by nie wywalał się program
+        return True
+
     def _tryAvoidObstacle(self) -> bool:
         '''
         Try changing the lane to avoid an obstacle.

@@ -12,6 +12,7 @@ from simulator.simulator import Simulator
 from simulator.statistics.tracker import Tracker
 from simulator.vehicle.autonomous import AutonomousCar
 from simulator.vehicle.car import Car
+from simulator.vehicle.conventional import ConventionalCar
 from simulator.vehicle.obstacle import Obstacle
 from simulator.vehicle.vehicle import Vehicle
 from util.format import OptionalFormat
@@ -96,7 +97,7 @@ class Controller:
             start, end = Colors.PURPLE, Colors.BLUE
         elif isinstance(vehicle, EmergencyCar):
             start, end = Colors.WHITE, Colors.BLACK
-        elif isinstance(vehicle, Car):
+        elif isinstance(vehicle, ConventionalCar):
             start, end = Colors.RED, Colors.GREEN
         else:
             raise ValueError()

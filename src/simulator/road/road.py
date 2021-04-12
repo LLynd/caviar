@@ -73,14 +73,6 @@ class Road:
         _, end = self.getAbsolutePosition(position=(x, lane + vehicle.width - 1))
         return start == end
 
-    def addVehicle(self, vehicle: Vehicle) -> None:
-        '''
-        Adds a new vehicle to the road.
-        :param position: position on the road.
-        :param vehicle: vehicle to add.
-        :return: None.
-        '''
-        raise NotImplementedError()
 
     def addEmergencyVehicle(self, vehicle: Vehicle) -> None:
         '''
@@ -93,20 +85,6 @@ class Road:
         self.emergency.add(vehicle)
         self.addVehicle(vehicle=vehicle)
 
-    def getVehicle(self, position: Position) -> typing.Optional[Vehicle]:
-        '''
-        Gets a vehicle from the road.
-        :param position: position on the road.
-        :return: a vehicle currently at the given position or None.
-        '''
-        raise NotImplementedError()
-
-    def getAllActiveVehicles(self) -> typing.Generator[Vehicle, None, None]:
-        '''
-        Gets all the vehicles on the road.
-        :return: generator yielding all the vehicles.
-        '''
-        raise NotImplementedError()
 
     def getAllVehicles(self) -> typing.Iterator[Vehicle]:
         '''
@@ -114,39 +92,6 @@ class Road:
         :return: generator yielding all the vehicles.
         '''
         return itertools.chain(self.getAllActiveVehicles(), self.removed)
-
-    def addPendingVehicle(self, vehicle: Vehicle) -> None:
-        '''
-        Adds the vehicle to the road which will be added on the next commit.
-        :param position: position on the road.
-        :param vehicle: vehicle to add.
-        :return: None.
-        '''
-        raise NotImplementedError
-
-    def getPendingVehicle(self, position: Position) -> typing.Optional[Vehicle]:
-        '''
-        Gets a vehicle from the road which will be added on the next commit.
-        :param position: position on the road.
-        :return: a vehicle currently at the given pending position or None.
-        '''
-        raise NotImplementedError()
-
-    def getNextVehicle(self, position: Position) -> typing.Tuple[int, typing.Optional[Vehicle]]:
-        '''
-        Gets the vehicle in front of a given position.
-        :param position: position on the road.
-        :return: position and the vehicle or None.
-        '''
-        raise NotImplementedError()
-
-    def getPreviousVehicle(self, position: Position) -> typing.Tuple[int, typing.Optional[Vehicle]]:
-        '''
-        Gets the vehicle in in the back of a given position.
-        :param position: position on the road.
-        :return: position and the vehicle or None.
-        '''
-        raise NotImplementedError()
 
     def isProperPosition(self, position: Position) -> bool:
         '''
@@ -180,13 +125,6 @@ class Road:
         return \
             all(self.isSafePosition(position=(x - i, lane + j))
                 for i in range(vehicle.length) for j in range(vehicle.width))
-
-    def _commitLanes(self) -> None:
-        '''
-        Moves the pending vehicles to the actual road and clears the pending road.
-        :return: None.
-        '''
-        raise NotImplementedError()
 
     def _updateLanes(self, f: typing.Callable[[Vehicle], Position]) -> None:
         '''

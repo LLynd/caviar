@@ -32,20 +32,6 @@ class Vehicle:
         self.last_position = position
         self.flags = VehicleFlags.NONE
 
-    def beforeMove(self) -> Position:
-        '''
-        Called for all vehicles on the road before performing the actual action.
-        :return: new position.
-        '''
-        raise NotImplementedError
-
-    def move(self) -> Position:
-        '''
-        Called for all vehicles on the road in every step of the simulation.
-        :return: new position.
-        '''
-        raise NotImplementedError
-
     def setStatistics(self, start: int) -> None:
         '''
         Set parameters for statistics purposes.
