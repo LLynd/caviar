@@ -51,6 +51,9 @@ class ConventionalCar(Car):
     def _tryAvoidBlockedLane(self) -> bool:
         #to jest placeholder by nie wywalał się program
         return True
+    
+    def _tryAvoidEmergencyLane(self) -> bool:
+        return True
 
     def _tryAvoidObstacle(self) -> bool:
         '''

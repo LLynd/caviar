@@ -8,6 +8,7 @@ from util.rand import shuffled
 
 class AutonomousCar(Car):
     BlockedLane = None
+    EmergencyLane = None
     def __init__(self, position: Position, velocity: int, road: Road,
                  length: int = 1, width: int = 1, limit: int = 0):
         super().__init__(
@@ -23,6 +24,10 @@ class AutonomousCar(Car):
     @classmethod
     def updateBlockedLane(cls, value: int):
         cls.BlockedLane = value
+        
+    @classmethod
+    def updateEmergencyLane(cls, value: int):
+        cls.EmergencyLane = value
 
     def _tryAvoidObstacle(self) -> bool:
         x, lane = self.position
@@ -65,10 +70,11 @@ class AutonomousCar(Car):
         Try changing the lane to create an emergency corridor.
         :return: if vehicle performed an emergency action.
         '''
+        x, lane = self.position
         emergency = self._getEmergency()
         changeValue = self.road.lane_width // 2
         # If there is no emergency or already avoiding the emergency, continue.
-        if emergency is None:
+        if emergency is None: #and lane != self.EmergencyLane:
             if self.road.isSingleLane(self):
                 return False
             else:
@@ -84,11 +90,23 @@ class AutonomousCar(Car):
         self.velocity = max(1, self.velocity - 1)
         if self.velocity > 2:
             return True
+        else:
+            if self.EmergencyLane == None:
+                self.updateEmergencyLane(lane)
         # Destination lane depends on the road position.
         _, absoluteLane = self.road.getAbsolutePosition(self.position)
         change = -changeValue if absoluteLane == 0 else changeValue
         self._tryAvoidWithChange(emergency, change)
         return True
+    
+    def _tryAvoidEmergencyLane(self) -> bool:
+        x, lane = self.position
+        if lane == self.EmergencyLane:
+            for change in shuffled([-self.road.lane_width, self.road.lane_width]):
+                destination = (x, lane + change)
+                if self._isChangePossible(destination) == True and self._isChangeSafe(destination) == True:
+                    self.position = (x, lane + change)
+                    return True
 
     def _tryChangeLanes(self) -> bool:
         # Find the best lane change.
@@ -101,7 +119,7 @@ class AutonomousCar(Car):
                 limit = self._getMaxSpeed(position=destination)
                 if limit > best_limit:
                     best_change, best_limit = change, limit
-        if best_change != 0 and lane + best_change != self.BlockedLane:
+        if best_change != 0 and lane + best_change != self.BlockedLane and lane + best_change != self.EmergencyLane:
             self.position = (x, lane + best_change)
             return True
         return False
