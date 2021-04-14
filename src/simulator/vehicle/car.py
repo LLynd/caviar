@@ -19,7 +19,7 @@ class Car(Vehicle):
     zipped: typing.Set[Vehicle]
 
     def __init__(self, position: Position, velocity: int, road: Road,
-                 length: int = 1, width: int = 1, limit: int = 0):
+                 length: int = 2, width: int = 1, limit: int = 0):
         super().__init__(position=position, velocity=velocity, length=length, width=width)
         self.road = road
         self.limit = limit

@@ -34,7 +34,7 @@ def configProvider(file_path: str, cmd: str) -> typing.Dict[str, typing.Any]:
 @click.option('--density', default=.1, help='Initial density of vehicles on the road')
 @click.option('--dispatch', default=6, help='Maximum number of cars dispatched each step')
 @click.option('--penetration', default=.5, help='Penetration rate of CAV')
-@click.option('--car-length', default=1, help='Number of cells occupied by a single car')
+@click.option('--car-length', default=2, help='Number of cells occupied by a single car')
 @click.option('--emergency', default=0, help='Emergency vehicle dispatch rate')
 # Driver options.
 @click.option('--pslow', default=.2, help='Probability a NS-model car will slow down')

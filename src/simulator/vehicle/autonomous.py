@@ -10,7 +10,7 @@ class AutonomousCar(Car):
     BlockedLane = None
     EmergencyLane = None
     def __init__(self, position: Position, velocity: int, road: Road,
-                 length: int = 1, width: int = 1, limit: int = 0):
+                 length: int = 2, width: int = 1, limit: int = 0):
         super().__init__(
             position=position, velocity=velocity, road=road,
             length=length, width=width, limit=limit)

@@ -27,7 +27,7 @@ class ConventionalCar(Car):
     driver: Driver
 
     def __init__(self, position: Position, velocity: int, road: Road,
-                 length: int = 1, width: int = 1,
+                 length: int = 2, width: int = 1,
                  limit: int = 0, driver: MaybeDriver = None):
         super().__init__(
             position=position, velocity=velocity, road=road,

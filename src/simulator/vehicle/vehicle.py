@@ -24,7 +24,7 @@ class Vehicle:
     # Statistics purposes.
     start: int
 
-    def __init__(self, position: Position, velocity: int = 0, length: int = 1, width: int = 1):
+    def __init__(self, position: Position, velocity: int = 0, length: int = 2, width: int = 1):
         self.position = position
         self.velocity = velocity
         self.length = length

@@ -6,7 +6,7 @@ from simulator.vehicle.vehicle import VehicleFlags
 
 class EmergencyCar(Car):
     def __init__(self, position: Position, velocity: int, road: Road,
-                 length: int = 1, width: int = 1):
+                 length: int = 2, width: int = 1):
         super().__init__(position=position, velocity=velocity, road=road,
                          length=length, width=width)
         self.flags |= VehicleFlags.EMERGENCY
