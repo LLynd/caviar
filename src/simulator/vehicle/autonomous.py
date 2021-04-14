@@ -74,7 +74,7 @@ class AutonomousCar(Car):
         emergency = self._getEmergency()
         changeValue = self.road.lane_width // 2
         # If there is no emergency or already avoiding the emergency, continue.
-        if emergency is None: #and lane != self.EmergencyLane:
+        if emergency is None:
             if self.road.isSingleLane(self):
                 return False
             else:
@@ -124,6 +124,12 @@ class AutonomousCar(Car):
             return True
         return False
 
+    def _trySlowDownIfNextToEmergencyLane(self) -> bool:
+        x, lane = self.position
+        for l in [lane-1, lane+1]:
+            if l == self.EmergencyLane and isinstance(self.road.getNextVehicle(position=(x-1,l))[1], Car):
+                self.velocity = 2 # jeszcze pomyślimy nad bardziej dynamiczną wartością
+                
     def _getMaxSpeedBonus(self, next: Vehicle, position: Position) -> int:
         if isinstance(next, AutonomousCar):
             return next.velocity
