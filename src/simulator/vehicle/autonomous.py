@@ -3,6 +3,7 @@ from simulator.road.road import Road
 from simulator.vehicle.car import Car
 from simulator.vehicle.obstacle import Obstacle
 from simulator.vehicle.vehicle import Vehicle
+from simulator.vehicle.emergency import EmergencyCar
 from util.rand import shuffled
 
 
@@ -103,7 +104,7 @@ class AutonomousCar(Car):
         x, lane = self.position
         if lane == self.EmergencyLane:
             for change in shuffled([-self.road.lane_width, self.road.lane_width]):
-                destination = (x, lane + change)
+                destination = (x, lane + change)#max(2, self.velocity//2)
                 if self._isChangePossible(destination) == True and self._isChangeSafe(destination) == True:
                     self.position = (x, lane + change)
                     return True
@@ -128,8 +129,10 @@ class AutonomousCar(Car):
         x, lane = self.position
         for l in [lane-1, lane+1]:
             if l == self.EmergencyLane and isinstance(self.road.getNextVehicle(position=(x-1,l))[1], Car):
-                self.velocity = 2 # jeszcze pomyślimy nad bardziej dynamiczną wartością
-                
+                self.velocity = self.velocity//2  # jeszcze pomyślimy nad bardziej dynamiczną wartością
+            if l == self.EmergencyLane and isinstance(self.road.getNextVehicle(position=(x-1,l))[1], EmergencyCar):
+                self.velocity = self._getMaxSpeed(position=self.position)
+
     def _getMaxSpeedBonus(self, next: Vehicle, position: Position) -> int:
         if isinstance(next, AutonomousCar):
             return next.velocity
@@ -139,7 +142,6 @@ class AutonomousCar(Car):
         if isinstance(previous, AutonomousCar):
             return previous.velocity
         return super()._getSafeChangeDistance(previous, destination)
-
 
 def isAutonomous(vehicle: Vehicle) -> bool:
     return isinstance(vehicle, AutonomousCar)
