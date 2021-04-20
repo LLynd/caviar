@@ -25,7 +25,7 @@ def configProvider(file_path: str, cmd: str) -> typing.Dict[str, typing.Any]:
 @click.group()
 # Road options.
 @click.option('--length', default=100, help='Road length')
-@click.option('--lanes', default=6, help='Number of lanes')
+@click.option('--lanes', default=8, help='Number of lanes')
 @click.option('--emergency-lane', default=0, help='Lane of emergency corridor')
 # Speed controller options.
 @click.option('--max-speed', default=5, help='Road maximum speed')
