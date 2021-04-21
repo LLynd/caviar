@@ -27,7 +27,7 @@ class HeatMap:
 
     def show(self, only_data: bool) -> None:
         click.secho(self.title, fg='yellow')
-        print(self.data.to_csv())
+        #print(self.data.to_csv())
         if not only_data:
             self._prepareChart()
             plt.show()
