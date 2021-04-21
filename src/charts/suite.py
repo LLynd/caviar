@@ -5,6 +5,9 @@ N = 10
 STEPS = 2000
 SKIP = 200
 
+if not os.path.isdir('./out'):
+    os.mkdir('./out')
+    
 for p in PENETRATION:
     penetration = int(p * 100)
     prefix = f'p{penetration:02d}'
