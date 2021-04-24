@@ -52,6 +52,7 @@ class TravelHistogram:
 @click.option('--output', '-o', default=None, help='Save output to a directory')
 @click.option('--prefix', '-p', default='', help='Prefix for output file names')
 @click.argument('files', nargs=-1, type=click.File())
+
 def main(output: typing.Optional[str], prefix: str, files):
     df = None
     if len(files) < 1:
