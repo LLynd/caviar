@@ -2,6 +2,7 @@
 #import re
 import os
 import datetime
+import informer
 
 PENETRATION = [.01, .1, .2, .3, .4, .5, .6, .7, .8, .9, .99]
 N = 10
@@ -17,6 +18,7 @@ name = str(date.date()) + '__' + str(datetime.time(date.hour, date.minute)).repl
 dir_name = os.path.join('out/', name)
 os.mkdir('./' + dir_name)
 
+informer.informer(dir_name, penetration = PENETRATION, length = 100, lanes = 3, obstacles = "1:50-50", symmetry = True, steps = STEPS, skip = SKIP)
 
 for p in PENETRATION: 
     penetration = int(p * 100)
