@@ -15,6 +15,7 @@ from simulator.simulator import Simulator
 from simulator.statistics.collector import Statistics
 from simulator.vehicle.conventional import Driver
 
+from charts.suite import experiment
 
 def configProvider(file_path: str, cmd: str) -> typing.Dict[str, typing.Any]:
     print(f'Loading {file_path} of {cmd}')
@@ -126,3 +127,11 @@ def cli(ctx: click.Context, all_statistics: bool, velocity: bool, heatmap: bool,
     if travel:
         statistics ^= statistics.TRAVEL_TIME
     controller.run(statistics=statistics, **kwargs)
+
+@command.command()
+@click.option('--kwiat', default = "Testowanko :c")
+@click.pass_context
+
+#work in progress :c
+def exp(ctx: click.Context, kwiat: str):
+    experiment(kwiat)
