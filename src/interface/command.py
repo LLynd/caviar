@@ -5,6 +5,7 @@ import click_config_file
 import yaml
 
 from interface.obstacle import ObstacleParamType, ObstacleValue, addObstacle
+from interface.experiment_list import PenListParamType
 from interface.gui.controller import Controller as GUIController
 from interface.cli.controller import Controller as CLIController
 
@@ -130,8 +131,11 @@ def cli(ctx: click.Context, all_statistics: bool, velocity: bool, heatmap: bool,
 
 @command.command()
 @click.option('--kwiat', default = "Testowanko :c")
+@click.option('--penetration-list', default ='.01, .1, .2, .3, .4, .5, .6, .7, .8, .9, .99', type=PenListParamType(), help = 'Penetration rates used in an experiment')
 @click.pass_context
 
 #work in progress :c
-def exp(ctx: click.Context, kwiat: str):
+def exp(ctx: click.Context, **kwargs):
+    kwiat: str = kwargs['kwiat']
+    penetration_list: list = kwargs['penetration_list']
     experiment(kwiat)
