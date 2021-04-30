@@ -4,14 +4,14 @@ import os
 import datetime
 from charts.informer import informer
 
+
 #work in progress
-def experiment(kwiat: str):
+def experiment(kwiat: str, penetration_list: list, N: int, steps: int, skip: int):
 
     print(kwiat)
-    PENETRATION = [.01, .1, .2, .3, .4, .5, .6, .7, .8, .9, .99]
     N = 2
-    STEPS = 100
-    SKIP = 10
+    STEPS = 1000
+    SKIP = 100
 
     if not os.path.isdir('./out'):
         os.mkdir('./out')
@@ -22,9 +22,9 @@ def experiment(kwiat: str):
     dir_name = os.path.join('out/', name)
     os.mkdir('./' + dir_name)
 
-    informer(dir_name, penetration = PENETRATION, length = 100, lanes = 3, obstacles = "1:50-50", symmetry = True, steps = STEPS, skip = SKIP)
+    informer(dir_name, penetration = penetration_list, length = 100, lanes = 3, obstacles = "1:50-50", symmetry = True, steps = STEPS, skip = SKIP)
 
-    for p in PENETRATION:
+    for p in penetration_list:
         penetration = int(p * 100)
         prefix = f'p{penetration:02d}'
         for i in range(N):
