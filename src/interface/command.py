@@ -8,6 +8,7 @@ from interface.obstacle import ObstacleParamType, ObstacleValue, addObstacle
 from interface.experiment_list import PenListParamType
 from interface.gui.controller import Controller as GUIController
 from interface.cli.controller import Controller as CLIController
+from interface.exp.controller import experiment
 
 from simulator.dispatcher.emergency import EmergencyDispatcher
 from simulator.road.dense import DenseRoad
@@ -16,7 +17,6 @@ from simulator.simulator import Simulator
 from simulator.statistics.collector import Statistics
 from simulator.vehicle.conventional import Driver
 
-from charts.suite import experiment
 
 def configProvider(file_path: str, cmd: str) -> typing.Dict[str, typing.Any]:
     print(f'Loading {file_path} of {cmd}')

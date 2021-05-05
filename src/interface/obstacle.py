@@ -5,7 +5,7 @@ from simulator.position import inBounds
 from simulator.road.road import Road
 from simulator.vehicle.obstacle import Obstacle
 
-ObstacleValue = typing.Tuple[int, int, int]
+ObstacleValue = (int, int, int)
 
 
 class ObstacleParamType(click.ParamType):

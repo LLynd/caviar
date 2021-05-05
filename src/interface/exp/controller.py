@@ -1,105 +1,70 @@
 import os
-import typing
+import datetime
 import click
+import typing
 
-import pandas as pd
+from charts.informer import informer
 
-from charts.heatmap import HeatMap
-from charts.velocity import VelocityChart
-from charts.travel import TravelHistogram
+def experiment(ctx: click.Context, sim_info, **kwargs):
 
-from simulator.simulator import Simulator
-from simulator.statistics.averageresult import AverageResult
-from simulator.statistics.collector import Collector, Statistics
-from simulator.statistics.tracker import Tracker
-from simulator.statistics.vehicletype import VehicleType
+    penetration_list: list = kwargs["penetration_list"]
+    num: int = kwargs['num']
+    steps: int = kwargs['steps']
+    skip: int = kwargs['skip']
 
-from util.format import OptionalFormat
+    simulator = ctx.obj
+
+    del sim_info["penetration"]
+    length: int = sim_info['length']
+    lanes: int = sim_info['lanes']
+    emergency_lane: int = sim_info["emergency_lane"]
+    max_speed: int = sim_info['max_speed']
+    density: float = sim_info['density']
+    dispatch: int = sim_info['dispatch']
+    car_length: int = sim_info['car_length']
+    emergency: int = sim_info['emergency']
+    pslow: float = sim_info['pslow']
+    pchange: float = sim_info['pchange']
+    if not sim_info["symmetry"]:
+        symmetry: str = ""
+    else:
+        symmetry: str = "--symmetry"
+    limit: int = sim_info['limit']
+    
+    print(sim_info["obstacles"])
+    if not sim_info["obstacles"]:
+        obstacles: str = ""
+    else:
+        lane, begin, end = sim_info['obstacles'][0]
+        obstacles: str = f'--obstacles {lane}:{begin}-{end}'
+    seed: typing.Optional[int] = sim_info['seed']
 
 
-class Controller:
-    simulator: Simulator
+    if not os.path.isdir('./out'):
+        os.mkdir('./out')
 
-    def __init__(self, simulator: Simulator):
-        self.simulator = simulator
+    date = datetime.datetime.now()
+    name = str(date.date()) + '__' + str(datetime.time(date.hour, date.minute)).replace(':', '-')
+    dir_name = os.path.join('out/', name)
+    os.mkdir('./' + dir_name)
 
-    def run(self, penetration_list: list, N: int, steps: int, skip: int, statistics: Statistics, no_charts: bool,
-            output: typing.Optional[str] = None, prefix: str = '') -> None:
-        with Collector(simulator=self.simulator, statistics=statistics, skip=skip) as collector, \
-                Tracker(simulator=self.simulator, buffer_size=steps - skip) as tracker:
+    informer(dir_name, steps = steps, skip = skip, penetration = penetration_list, **sim_info)
 
-            def show_stats(_: typing.Any) -> str:
-                return '{:.2f}|{:.2f}|{:.2f} (Average|Conventional|Autonomous)'.format(
-                    OptionalFormat(tracker.getAverageVelocity(VehicleType.ANY)),
-                    OptionalFormat(tracker.getAverageVelocity(VehicleType.CONVENTIONAL)),
-                    OptionalFormat(tracker.getAverageVelocity(VehicleType.AUTONOMOUS))
-                )
+    for p in penetration_list:
+        penetration = int(p * 100)
+        prefix = f'p{penetration:02d}'
+        for i in range(num):
+            os.system(f'python src/main.py --penetration {p} --length {length} --lanes {lanes} --emergency-lane {emergency_lane} '
+                      f'--max-speed {max_speed} {obstacles} --density {density} --dispatch {dispatch} '
+                      f'--car-length {car_length} --emergency {emergency} --pslow {pslow} --pchange {pchange} '
+                      f'{symmetry} --limit {limit} cli --steps {steps} --skip {skip} '
+                      f'-o {dir_name} --prefix="{prefix}__{i:02d}" --no-charts --travel --heatmap')
 
-            with click.progressbar(range(steps), steps, item_show_func=show_stats) as bar:
-                for _ in bar:
-                    self.simulator.step()
+        os.system(f'python src/charts/heatmap.py -o {dir_name}  -p {prefix}.traffic -s 5 {dir_name}/{prefix}__*_traffic.csv')
+        os.system(f'python src/charts/travel.py -o {dir_name} -p {prefix}.travel'
+                  f' {dir_name}/{prefix}__*_travel.csv')
+        os.system(f'python src/charts/average.py -o {dir_name} -p {prefix}.average'
+                  f' -x {penetration} {dir_name}/{prefix}__*_average.csv')
 
-            if statistics & Statistics.THROUGHPUT:
-                click.secho('Generating throughput charts', fg='blue')
-                throughput = HeatMap(
-                    data=collector.getThrougput(), title='Throughput', max_value=3)
-                if output is not None:
-                    throughput.save(path=output, prefix=f'{prefix}_throughput', only_data=no_charts)
-                else:
-                    throughput.show(only_data=no_charts)
-
-            if statistics & Statistics.HEAT_MAP:
-                click.secho('Generating traffic density charts', fg='blue')
-                heat_map = HeatMap(
-                    data=collector.getHeatMap(), title='Traffic density', max_value=1)
-                if output is not None:
-                    heat_map.save(path=output, prefix=f'{prefix}_traffic', only_data=no_charts)
-                else:
-                    heat_map.show(only_data=no_charts)
-
-            if statistics & Statistics.VELOCITY:
-                click.secho('Generating speed charts', fg='blue')
-
-                def mapper(x: AverageResult) -> float:
-                    return x.toZeroFloat()
-
-                velocity = \
-                    [list(map(mapper, lane)) for lane in collector.velocity]
-                autonomous = \
-                    [list(map(mapper, lane)) for lane in collector.velocity_autonomous]
-                conventional = \
-                    [list(map(mapper, lane)) for lane in collector.velocity_conventional]
-                velocity = VelocityChart(
-                    car=velocity, autonomous=autonomous, conventional=conventional)
-                if output is not None:
-                    velocity.save(path=output, prefix=f'{prefix}_speed', only_data=no_charts)
-                else:
-                    velocity.show(only_data=no_charts)
-
-            if statistics & Statistics.TRAVEL_TIME:
-                click.secho('Generating travel time histogram', fg='blue')
-
-                df = pd.DataFrame(columns=['x', 'y', 'type'])
-                n = sum(collector.travel)
-                na = sum(collector.travel_autonomous)
-                nc = sum(collector.travel_conventional)
-                for i in range(collector._travelLimit):
-                    df = df.append({'x': i, 'y': collector.travel[i] / n * 100,
-                                    'type': 'All'}, ignore_index=True)
-                    df = df.append({'x': i, 'y': collector.travel_autonomous[i] / na * 100,
-                                    'type': 'Autonomous'}, ignore_index=True)
-                    df = df.append({'x': i, 'y': collector.travel_conventional[i] / nc * 100,
-                                    'type': 'Conventional'}, ignore_index=True)
-
-                travel = TravelHistogram(data=df)
-                if output is not None:
-                    travel.save(path=output, prefix=prefix, only_data=no_charts)
-                else:
-                    travel.show(only_data=no_charts)
-
-            click.secho('Generating average statistics', fg='blue')
-            data = tracker.getAverageData()
-            if output is not None:
-                data.to_csv(os.path.join(output, f'{prefix}_average.csv'), index=False)
-            else:
-                click.echo(data.to_csv(index=False))
+    os.system(f'python src/charts/average.py --output={dir_name} --prefix=average {dir_name}/*.average.csv')
+    os.system(f'python src/charts/penetration.py --output={dir_name} --prefix=average {dir_name}/average.csv')
