@@ -84,7 +84,8 @@ def command(ctx: click.Context, **kwargs) -> None:
     simulator = Simulator(road=road, dispatcher=dispatcher)
     simulator.scatterVehicles(density=density)
     ctx.obj = simulator
-
+    global sim_info
+    sim_info = kwargs
 
 @command.command()
 @click.option('--step', default=100, help='Animation time of a single simulation step (ms)')
@@ -130,12 +131,10 @@ def cli(ctx: click.Context, all_statistics: bool, velocity: bool, heatmap: bool,
     controller.run(statistics=statistics, **kwargs)
 
 @command.command()
-@click.option('--kwiat', default = "Testowanko :c")
 @click.option('--penetration-list', default ='.01, .1, .2, .3, .4, .5, .6, .7, .8, .9, .99', type=PenListParamType(), help = 'Penetration rates used in an experiment')
 @click.pass_context
 
 #work in progress :c
 def exp(ctx: click.Context, **kwargs):
-    kwiat: str = kwargs['kwiat']
     penetration_list: list = kwargs['penetration_list']
-    experiment(kwiat)
+    experiment(ctx, sim_info, **kwargs)

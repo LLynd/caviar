@@ -2,16 +2,42 @@
 #import re
 import os
 import datetime
+import click
+import typing
 from charts.informer import informer
 
 #work in progress
-def experiment(kwiat: str):
+def experiment(ctx: click.Context, sim_info, **kwargs):
 
-    print(kwiat)
-    PENETRATION = [.01, .1, .2, .3, .4, .5, .6, .7, .8, .9, .99]
+    PENETRATION = kwargs["penetration_list"]
     N = 2
     STEPS = 100
     SKIP = 10
+
+    simulator = ctx.obj
+
+    del sim_info["penetration"]
+    length: int = sim_info['length']
+    lanes: int = sim_info['lanes']
+    emergency_lane: int = sim_info["emergency_lane"]
+    max_speed: int = sim_info['max_speed']
+    density: float = sim_info['density']
+    dispatch: int = sim_info['dispatch']
+    car_length: int = sim_info['car_length']
+    emergency: int = sim_info['emergency']
+    pslow: float = sim_info['pslow']
+    pchange: float = sim_info['pchange']
+    if not sim_info["symmetry"]:
+        symmetry: str = ""
+    else:
+        symmetry: str = "--symmetry"
+    limit: int = sim_info['limit']
+    if not sim_info["obstacles"]:
+        obstacles: str = ""
+    else:
+        obstacles: str = "--obstacles=" + sim_info['obstacles']
+    seed: typing.Optional[int] = sim_info['seed']
+
 
     if not os.path.isdir('./out'):
         os.mkdir('./out')
@@ -22,15 +48,17 @@ def experiment(kwiat: str):
     dir_name = os.path.join('out/', name)
     os.mkdir('./' + dir_name)
 
-    informer(dir_name, penetration = PENETRATION, length = 100, lanes = 3, obstacles = "1:50-50", symmetry = True, steps = STEPS, skip = SKIP)
+    informer(dir_name, steps = STEPS, skip = SKIP, penetration = PENETRATION, **sim_info)
 
     for p in PENETRATION:
         penetration = int(p * 100)
         prefix = f'p{penetration:02d}'
         for i in range(N):
-            os.system(f'python src/main.py --penetration {p} --length 100 --lanes 3'
-                      f' --obstacles=1:50-50 --symmetry cli --steps {STEPS} --skip {SKIP}'
-                      f' -o {dir_name} --prefix="{prefix}__{i:02d}" --no-charts --travel --heatmap')
+            os.system(f'python src/main.py --penetration {p} --length {length} --lanes {lanes} --emergency-lane {emergency_lane} '
+                      f'--max-speed {max_speed} {obstacles} --density {density} --dispatch {dispatch} '
+                      f'--car-length {car_length} --emergency {emergency} --pslow {pslow} --pchange {pchange} '
+                      f'{symmetry} --limit {limit} cli --steps {STEPS} --skip {SKIP} '
+                      f'-o {dir_name} --prefix="{prefix}__{i:02d}" --no-charts --travel --heatmap')
 
         # files = os.listdir('./out')
 
@@ -69,4 +97,3 @@ def experiment(kwiat: str):
 
     os.system(f'python src/charts/average.py --output={dir_name} --prefix=average {dir_name}/*.average.csv')
     os.system(f'python src/charts/penetration.py --output={dir_name} --prefix=average {dir_name}/average.csv')
-    print(kwiat)
