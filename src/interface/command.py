@@ -130,6 +130,7 @@ def cli(ctx: click.Context, all_statistics: bool, velocity: bool, heatmap: bool,
         statistics ^= statistics.TRAVEL_TIME
     controller.run(statistics=statistics, **kwargs)
 
+
 @command.command()
 @click.option('--penetration-list', default ='.01, .1, .2, .3, .4, .5, .6, .7, .8, .9, .99', type=PenListParamType(), help = 'Penetration rates used in an experiment')
 @click.option('--num', default=10, help = 'Number of simulations in one experiment for every penetration rate')
@@ -137,4 +138,4 @@ def cli(ctx: click.Context, all_statistics: bool, velocity: bool, heatmap: bool,
 @click.option('--skip', default=100, help='Skip first n steps when gathering statistics')
 @click.pass_context
 def exp(ctx: click.Context, **kwargs):
-    experiment(ctx, sim_info, **kwargs)
+    experiment(sim_info, **kwargs)
