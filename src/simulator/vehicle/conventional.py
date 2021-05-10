@@ -6,6 +6,7 @@ from simulator.road.road import Road
 from simulator.vehicle.car import Car
 from simulator.vehicle.obstacle import Obstacle
 from simulator.vehicle.vehicle import Vehicle
+from simulator.vehicle.emergency import EmergencyCar
 from util.rand import shuffled
 
 
@@ -54,8 +55,22 @@ class ConventionalCar(Car):
     
     def _trySlowDownIfNextToEmergencyLane(self) -> bool:
         return True
-    
+
     def _tryAvoidEmergencyLane(self) -> bool:
+        x, lane = self.position
+        for xpos in range(x-10, x, 1):
+            if isinstance(self.road.getNextVehicle(position=(xpos-1, lane))[1], EmergencyCar):
+                print(self.position,'Debug') #self.EmergencyCar.giveEmergencyRadius()
+                for change in shuffled([-self.road.lane_width, self.road.lane_width]):
+                    destination = (x, lane + change)#max(2, self.velocity//2)
+                    if self._isChangePossible(destination) == True and self._isChangeSafe(destination) == True:
+                        self.position = (x, lane + change)
+                        return True
+                    else:
+                        self.velocity = self._getMaxSpeed(position=self.position)
+                        return True
+
+    def _trySlowDownIfNextToBlockedLane(self) -> bool:
         return True
 
     def _tryAvoidObstacle(self) -> bool:
@@ -92,9 +107,11 @@ class ConventionalCar(Car):
         return False
 
     def _tryChangeEmergency(self) -> bool:
+        return True
         '''
         Try changing the lane to create an emergency corridor.
         :return: if vehicle performed an emergency action.
+        '''
         '''
         emergency = self._getEmergency()
         changeValue = self.road.lane_width // 2
@@ -120,7 +137,7 @@ class ConventionalCar(Car):
         change = -changeValue if absoluteLane == 0 else changeValue
         self._tryAvoidWithChange(emergency, change)
         return True
-
+    '''
     def _canChangeLane(self, destination: Position, force: bool = False) -> bool:
         change_lane = super()._canChangeLane(destination=destination, force=force)
         return change_lane and random.random() < self.driver.change

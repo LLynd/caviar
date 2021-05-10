@@ -5,6 +5,8 @@ from simulator.vehicle.vehicle import VehicleFlags
 from simulator.vehicle.vehicle import Vehicle
 
 class EmergencyCar(Car):
+    emergencyRadius = 10
+
     def __init__(self, position: Position, velocity: int, road: Road,
                  length: int = 2, width: int = 1):
         super().__init__(position=position, velocity=velocity, road=road,
@@ -21,6 +23,9 @@ class EmergencyCar(Car):
         self.path.append((self.position, self.velocity))
         self.last_position = self.position
         return self.position
+
+    def giveEmergencyRadius(self) -> int:
+        return cls.emergencyRadius
 
 def isEmergency(vehicle: Vehicle) -> bool:
     return isinstance(vehicle, EmergencyCar)

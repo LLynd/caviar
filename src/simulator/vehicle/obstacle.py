@@ -11,3 +11,6 @@ class Obstacle(Vehicle):
 
     def move(self) -> Position:
         return self.position
+
+def isObstacle(vehicle: Vehicle) -> bool:
+    return isinstance(vehicle, Obstacle)

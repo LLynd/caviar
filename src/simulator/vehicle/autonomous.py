@@ -133,6 +133,14 @@ class AutonomousCar(Car):
             if l == self.EmergencyLane and isinstance(self.road.getNextVehicle(position=(x-1,l))[1], EmergencyCar):
                 self.velocity = self._getMaxSpeed(position=self.position)
 
+    def _trySlowDownIfNextToBlockedLane(self) -> bool:
+        x, lane = self.position
+        for l in [lane-1, lane+1]:
+            if l == self.BlockedLane and isinstance(self.road.getNextVehicle(position=(x-1,l))[1], Car):
+                self.velocity = max(2,self.velocity//2)
+            if l == self.BlockedLane and isinstance(self.road.getNextVehicle(position=(x-1,l))[1], Obstacle):
+                self.velocity = self._getMaxSpeed(position=self.position)
+
     def _getMaxSpeedBonus(self, next: Vehicle, position: Position) -> int:
         if isinstance(next, AutonomousCar):
             return next.velocity
