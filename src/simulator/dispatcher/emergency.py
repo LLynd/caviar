@@ -24,6 +24,7 @@ class EmergencyDispatcher(MixedDispatcher):
             speed = self.road.controller.getMaxSpeed(position, width=self.road.lane_width)
             vehicle = EmergencyCar(position=position, velocity=speed, road=self.road,
                                    length=self.length, width=self.road.lane_width)
+            vehicle.setStatistics(start=step)
             # Add the vehicle if possible.
             if self.road.canPlaceVehicle(vehicle=vehicle):
                 self.road.addEmergencyVehicle(vehicle=vehicle)
