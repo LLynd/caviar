@@ -7,8 +7,8 @@ from simulator.statistics.averageresult import AverageResult
 from simulator.vehicle.autonomous import isAutonomous
 from simulator.vehicle.car import isCar
 from simulator.vehicle.conventional import isConventional
+from simulator.vehicle.emergency import isEmergency
 from util.enum import withLimits
-
 
 @withLimits
 class Statistics(enum.Flag):
@@ -22,11 +22,12 @@ class Collector(Hook):
     statistics: Statistics
     skip: int
     steps: int
-
+    emergency_lane: int
     # Velocity statistics buffers.
     velocity: typing.List[typing.List[AverageResult]]
     velocity_autonomous: typing.List[typing.List[AverageResult]]
     velocity_conventional: typing.List[typing.List[AverageResult]]
+    velocity_emergency: typing.List[typing.List[AverageResult]]
 
     # Throughput statistics buffers.
     throughput: typing.List[typing.List[int]]
@@ -38,14 +39,16 @@ class Collector(Hook):
     travel: typing.List[int]
     travel_autonomous: typing.List[int]
     travel_conventional: typing.List[int]
+    travel_emergency: typing.List[int]
 
     def __init__(self, simulator: Simulator, statistics: Statistics = Statistics.ALL,
-                 skip: int = 0):
+                 skip: int = 0, emergency_lane: int = None):
         super().__init__(simulator=simulator)
         self.statistics = statistics
         self.skip = skip
         self.steps = 0
-
+        self.emergency_lane = emergency_lane
+        
         if self.statistics & Statistics.VELOCITY:
             self._initVelocity()
         if self.statistics & Statistics.THROUGHPUT:
@@ -87,6 +90,9 @@ class Collector(Hook):
         self.velocity_conventional = \
             [[AverageResult(0, 0) for _ in range(self._road.length)]
              for _ in range(self._road.lanes_count)]
+        self.velocity_emergency = \
+            [[AverageResult(0, 0) for _ in range(self._road.length)]
+             for _ in range(self._road.lanes_count)]
 
     def _collectVelocity(self) -> None:
         for vehicle in self._road.getAllActiveVehicles():
@@ -102,6 +108,8 @@ class Collector(Hook):
                     self.velocity_autonomous[lane][x] += value
                 if isConventional(vehicle):
                     self.velocity_conventional[lane][x] += value
+                if isEmergency(vehicle):
+                    self.velocity_emergency[lane][x] += value
 
     def _initThroughput(self) -> None:
         self.throughput = [[0] * self._road.length for _ in range(self._road.lanes_count)]
@@ -156,6 +164,9 @@ class Collector(Hook):
         self.travel = [0] * self._travelLimit
         self.travel_autonomous = [0] * self._travelLimit
         self.travel_conventional = [0] * self._travelLimit
+        if self.emergency_lane:
+            self.travel_emergency = [0] * self._travelLimit
+        else: self.travel_emergency = None
 
     def _collectTravelTime(self) -> None:
         for vehicle in self._road.removed:
@@ -166,3 +177,5 @@ class Collector(Hook):
                 self.travel_autonomous[time] += 1
             if isConventional(vehicle):
                 self.travel_conventional[time] += 1
+            # if isEmergency(vehicle):
+            #     self.travel_emergency[time] += 1

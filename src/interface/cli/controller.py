@@ -13,13 +13,14 @@ from simulator.statistics.averageresult import AverageResult
 from simulator.statistics.collector import Collector, Statistics
 from simulator.statistics.tracker import Tracker
 from simulator.statistics.vehicletype import VehicleType
+from simulator.vehicle.emergency import VehicleFlags
 
 from util.format import OptionalFormat
 
 
 class Controller:
     simulator: Simulator
-
+    
     def __init__(self, simulator: Simulator):
         self.simulator = simulator
 
@@ -29,10 +30,11 @@ class Controller:
                 Tracker(simulator=self.simulator, buffer_size=steps - skip) as tracker:
 
             def show_stats(_: typing.Any) -> str:
-                return '{:.2f}|{:.2f}|{:.2f} (Average|Conventional|Autonomous)'.format(
+                return '{:.2f}|{:.2f}|{:.2f}|{:.2f} (Average|Conventional|Autonomous|Emergency)'.format(
                     OptionalFormat(tracker.getAverageVelocity(VehicleType.ANY)),
                     OptionalFormat(tracker.getAverageVelocity(VehicleType.CONVENTIONAL)),
-                    OptionalFormat(tracker.getAverageVelocity(VehicleType.AUTONOMOUS))
+                    OptionalFormat(tracker.getAverageVelocity(VehicleType.AUTONOMOUS)),
+                    OptionalFormat(tracker.getAverageVelocity(VehicleType.EMERGENCY))
                 )
 
             with click.progressbar(range(steps), steps, item_show_func=show_stats) as bar:
@@ -69,8 +71,10 @@ class Controller:
                     [list(map(mapper, lane)) for lane in collector.velocity_autonomous]
                 conventional = \
                     [list(map(mapper, lane)) for lane in collector.velocity_conventional]
+                emergency = \
+                    [list(map(mapper, lane)) for lane in collector.velocity_emergency]
                 velocity = VelocityChart(
-                    car=velocity, autonomous=autonomous, conventional=conventional)
+                    car=velocity, autonomous=autonomous, conventional=conventional, emergency=emergency)
                 if output is not None:
                     velocity.save(path=output, prefix=f'{prefix}_speed', only_data=no_charts)
                 else:
@@ -83,6 +87,8 @@ class Controller:
                 n = sum(collector.travel)
                 na = sum(collector.travel_autonomous)
                 nc = sum(collector.travel_conventional)
+                if collector.travel_emergency:
+                    ne = sum(collector.travel_emergency)
                 for i in range(collector._travelLimit):
                     df = df.append({'x': i, 'y': collector.travel[i] / n * 100,
                                     'type': 'All'}, ignore_index=True)
@@ -90,6 +96,9 @@ class Controller:
                                     'type': 'Autonomous'}, ignore_index=True)
                     df = df.append({'x': i, 'y': collector.travel_conventional[i] / nc * 100,
                                     'type': 'Conventional'}, ignore_index=True)
+                    if collector.travel_emergency:
+                        df = df.append({'x': i, 'y': collector.travel_emergency[i] / ne * 100,
+                                        'type': 'Emergency'}, ignore_index=True)
 
                 travel = TravelHistogram(data=df)
                 if output is not None:

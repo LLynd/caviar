@@ -13,11 +13,13 @@ class VelocityChart:
     car: pd.DataFrame
     autonomous: pd.DataFrame
     conventional: pd.DataFrame
+    emergency: pd.DataFrame
 
-    def __init__(self, car: VelocityData, autonomous: VelocityData, conventional: VelocityData):
+    def __init__(self, car: VelocityData, autonomous: VelocityData, conventional: VelocityData, emergency: VelocityData):
         self.car = pd.DataFrame(car)
         self.autonomous = pd.DataFrame(autonomous)
         self.conventional = pd.DataFrame(conventional)
+        self.emergency = pd.DataFrame(emergency)
 
     def show(self, only_data: bool) -> None:
         click.secho('Average speed', fg='yellow')
@@ -26,6 +28,8 @@ class VelocityChart:
         print(self.autonomous.to_csv())
         click.secho('Conventional speed', fg='yellow')
         print(self.conventional.to_csv())
+        click.secho('Emergency speed', fg='yellow')
+        print(self.emergency.to_csv())
         if not only_data:
             self._prepareChart()
             plt.show()
@@ -37,6 +41,8 @@ class VelocityChart:
         self.autonomous.to_csv(autonomous_path)
         conventional_path = os.path.join(path, f'{prefix}_conventional.csv')
         self.conventional.to_csv(conventional_path)
+        emergency_path = os.path.join(path, f'{prefix}_emergency.csv')
+        self.emergency.to_csv(emergency_path)
         if not only_data:
             self._prepareChart()
             plt_path = os.path.join(path, f'{prefix}.png')
@@ -48,6 +54,8 @@ class VelocityChart:
         data = pd.DataFrame({
             'All': self.car.sum(axis=0) / self.car.shape[0],
             'Autonomous': self.autonomous.sum(axis=0) / self.autonomous.shape[0],
-            'Conventional': self.conventional.sum(axis=0) / self.conventional.shape[0]})
+            'Conventional': self.conventional.sum(axis=0) / self.conventional.shape[0],
+            'Emergency': self.emergency.sum(axis=0) / 1 })
+
         ax = sns.lineplot(data=data)
         ax.set(ylabel='Speed', xlabel='Position', title='Average speed on the road\n')

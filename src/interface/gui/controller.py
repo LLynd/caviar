@@ -126,11 +126,13 @@ class Controller:
             'velocity': tracker.getAverageVelocity(VehicleType.ANY),
             'velocity_autonomous': tracker.getAverageVelocity(VehicleType.AUTONOMOUS),
             'velocity_conventional': tracker.getAverageVelocity(VehicleType.CONVENTIONAL),
+            'velocity_emergency': tracker.getAverageVelocity(VehicleType.EMERGENCY)
         }
         text = font.render(
             'Steps={steps} | Velocity={velocity:.2f} | '
             'Conventional Velocity={velocity_conventional:.2f} | '
-            'Autonomous Velocity={velocity_autonomous:.2f}'.format(
+            'Autonomous Velocity={velocity_autonomous:.2f} | '
+            'Emergency Velocity={velocity_emergency:.2f}'.format(
                 **withOptionalFormat(statistics)), True, (0, 0, 0))
         rect = text.get_rect()
         rect.center = (self.width // 2, self.height + self.STATS_SIZE // 2)
