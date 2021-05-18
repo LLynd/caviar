@@ -6,7 +6,6 @@ import seaborn as sns
 import matplotlib.pylab as plt
 import typing
 
-
 def make_plot(df: pd.DataFrame, key: str, ylabel: str, multiplier: int, ylim: int,
               table: bool, output, prefix) -> None:
     # Prepare data.
@@ -14,25 +13,20 @@ def make_plot(df: pd.DataFrame, key: str, ylabel: str, multiplier: int, ylim: in
     data_all = df[['x', key_all]] \
         .rename(columns={key_all: 'y'})
     data_all['type'] = 'All'
-    key_conventional = f'{key}_conventional'
-    data_conventional = df[['x', key_conventional]] \
-        .rename(columns={key_conventional: 'y'})
-    data_conventional['type'] = 'Conventional'
-    key_autonomous = f'{key}_autonomous'
-    data_autonomous = df[['x', key_autonomous]] \
-        .rename(columns={key_autonomous: 'y'})
-    data = data_all.append(data_conventional).append(data_autonomous)
+    key_emergency = f'{key}_emergency'
+    data_emergency = df[['x', key_emergency]] \
+        .rename(columns={key_emergency: 'y'})
+    data_emergency['type'] = 'Emergency'
+    data = data_all.append(data_emergency)
     data['y'] *= multiplier
 
     if table:
         print(key)
         df[key_all] *= multiplier
-        df[key_autonomous] *= multiplier
-        df[key_conventional] *= multiplier
+        df[key_emergency] *= multiplier
         print(df.groupby(['x'], as_index=False).agg({
             f'{key}_all': ['mean', 'std'],
-            f'{key}_conventional': ['mean', 'std'],
-            f'{key}_autonomous': ['mean', 'std'],
+            f'{key}_emergency': ['mean', 'std'],
         }).to_csv(index=False, float_format='%.3f'))
     # Make plot.
     sns.set_style('white')
@@ -59,13 +53,14 @@ def make_plot(df: pd.DataFrame, key: str, ylabel: str, multiplier: int, ylim: in
 @click.argument('file', type=click.File())
 def main(output: typing.Optional[str], prefix: str, table: bool, file):
     df = pd.read_csv(file, header=0)
-    keys = ['velocity', 'throughput', 'decelerations', 'laneChanges', 'waiting']
+    keys = ['velocity']
+    # , 'throughput', 'decelerations', 'laneChanges', 'waiting']
     ylabels = [
         'Speed (sites/step)',  # noqa: W605
-        'Throughput (vehicles/step)',  # noqa: W605
-        'Quick Decelerations (vehicles%/step)',  # noqa: W605
-        'Lane Changes (vehicles%/step)',  # noqa: W605
-        'Waiting Vehicles (vehicles%/step)'  # noqa: W605
+        # 'Throughput (vehicles/step)',  # noqa: W605
+        # 'Quick Decelerations (vehicles%/step)',  # noqa: W605
+        # 'Lane Changes (vehicles%/step)',  # noqa: W605
+        # 'Waiting Vehicles (vehicles%/step)'  # noqa: W605
     ]
     multipliers = [1, 1, 100, 100, 100]
     ylims = [5.5, 3.5, 6.5, 3, 60]
