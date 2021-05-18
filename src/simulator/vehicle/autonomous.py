@@ -108,6 +108,9 @@ class AutonomousCar(Car):
                 if self._isChangePossible(destination) == True and self._isChangeSafe(destination) == True:
                     self.position = (x, lane + change)
                     return True
+                
+    def _tryToSpeedUpIfSpottedEmergency(self) -> bool:
+        return True            
 
     def _tryChangeLanes(self) -> bool:
         # Find the best lane change.

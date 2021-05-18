@@ -20,9 +20,10 @@ class Driver:
         self.slow = slow
         self.symmetry = symmetry
 
+    def set_slow(self, value):
+        self.slow = value
 
 MaybeDriver = typing.Optional[Driver]
-
 
 class ConventionalCar(Car):
     driver: Driver
@@ -70,6 +71,15 @@ class ConventionalCar(Car):
                         self.velocity = self._getMaxSpeed(position=self.position)
                         return True
 
+    def _tryToSpeedUpIfSpottedEmergency(self) -> bool:
+        x, lane = self.position
+        for xpos in range(x-10, x, 1):
+            if isinstance(self.road.getNextVehicle(position=(xpos-1, lane))[1], EmergencyCar):
+                self.driver.set_slow(0.001)
+                self.velocity += 2
+            else:
+                self.driver.set_slow(0.05)
+                
     def _trySlowDownIfNextToBlockedLane(self) -> bool:
         return True
 

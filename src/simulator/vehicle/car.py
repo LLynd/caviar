@@ -203,6 +203,7 @@ class Car(Vehicle):
             lambda: self._tryAvoidEmergencyLane(),
             lambda: self._trySlowDownIfNextToEmergencyLane(),
             lambda: self._trySlowDownIfNextToBlockedLane(),
+            lambda: self._tryToSpeedUpIfSpottedEmergency()
         ]
         for tryChange in changes:
             if tryChange():
