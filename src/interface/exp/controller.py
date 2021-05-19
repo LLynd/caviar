@@ -61,3 +61,5 @@ def experiment(sim_info, **kwargs):
 
     os.system(f'python src/charts/average.py --output={dir_name} --prefix=average {dir_name}/*.average.csv')
     os.system(f'python src/charts/penetration.py --output={dir_name} --prefix=average {dir_name}/average.csv')
+    if not emergency == 0:
+        os.system(f'python src/charts/penetration_emergency.py --output={dir_name} --prefix=average_emergency {dir_name}/average.csv')
