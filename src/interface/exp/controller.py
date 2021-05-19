@@ -41,7 +41,7 @@ def experiment(sim_info, **kwargs):
     dir_name = os.path.join('out/', name)
     os.mkdir('./' + dir_name)
 
-    informer(dir_name, steps = steps, skip = skip, penetration = penetration_list, **sim_info)
+    informer(dir_name, steps = steps, skip = skip, num = num, penetration = penetration_list, **sim_info)
 
     for p in penetration_list:
         penetration = int(p * 100)

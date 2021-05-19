@@ -14,13 +14,17 @@ def make_plot(df: pd.DataFrame, key: str, ylabel: str, multiplier: int, ylim: in
     data_all = df[['x', key_all]] \
         .rename(columns={key_all: 'y'})
     data_all['type'] = 'All'
+    
     key_conventional = f'{key}_conventional'
     data_conventional = df[['x', key_conventional]] \
         .rename(columns={key_conventional: 'y'})
     data_conventional['type'] = 'Conventional'
+    
     key_autonomous = f'{key}_autonomous'
     data_autonomous = df[['x', key_autonomous]] \
         .rename(columns={key_autonomous: 'y'})
+    data_autonomous['type'] = 'Autonomus'
+    
     data = data_all.append(data_conventional).append(data_autonomous)
     data['y'] *= multiplier
 
