@@ -48,9 +48,10 @@ simulation:
 ```
 
 ### Example usage
-Simulation can run in two different modes:
+Simulation can run in three different modes:
 * `gui` displaying animation of the vehicles
 * `cli` running for a specific number of cycles and showing only statistics
+* `exp` running an experiment for a given list of market penetration rates
 
 #### GUI
 You can see `gui` specific parameters by running
@@ -72,4 +73,14 @@ You can see `cli` specific parameters by running
 For example to change the number of steps to 1000
 ```sh
 (venv) $ python src/main.py cli --steps 1000
+```
+
+### EXP
+You can see `exp` specific parameters by running
+```sh
+(venv) $ python src/main.py exp --help
+```
+For example to set a list of market penetration rates
+```sh
+(venv) $ python src/main.py exp --penetration-list [0.1,0.3,0.5,0.7,0.9]
 ```
