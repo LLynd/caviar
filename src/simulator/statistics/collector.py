@@ -42,7 +42,7 @@ class Collector(Hook):
     travel_emergency: typing.List[int]
 
     def __init__(self, simulator: Simulator, statistics: Statistics = Statistics.ALL,
-                 skip: int = 0, emergency_lane: int = None):
+                 skip: int = 0, emergency_lane: int = 0):
         super().__init__(simulator=simulator)
         self.statistics = statistics
         self.skip = skip
@@ -164,9 +164,8 @@ class Collector(Hook):
         self.travel = [0] * self._travelLimit
         self.travel_autonomous = [0] * self._travelLimit
         self.travel_conventional = [0] * self._travelLimit
-        if self.emergency_lane:
-            self.travel_emergency = [0] * self._travelLimit
-        else: self.travel_emergency = None
+       
+        self.travel_emergency = [0] * self._travelLimit
 
     def _collectTravelTime(self) -> None:
         for vehicle in self._road.removed:
@@ -177,5 +176,5 @@ class Collector(Hook):
                 self.travel_autonomous[time] += 1
             if isConventional(vehicle):
                 self.travel_conventional[time] += 1
-            # if isEmergency(vehicle):
-            #     self.travel_emergency[time] += 1
+            if isEmergency(vehicle):
+                 self.travel_emergency[time] += 1

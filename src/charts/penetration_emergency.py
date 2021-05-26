@@ -54,13 +54,8 @@ def make_plot(df: pd.DataFrame, key: str, ylabel: str, multiplier: int, ylim: in
 def main(output: typing.Optional[str], prefix: str, table: bool, file):
     df = pd.read_csv(file, header=0)
     keys = ['velocity']
-    # , 'throughput', 'decelerations', 'laneChanges', 'waiting']
     ylabels = [
         'Speed (sites/step)',  # noqa: W605
-        # 'Throughput (vehicles/step)',  # noqa: W605
-        # 'Quick Decelerations (vehicles%/step)',  # noqa: W605
-        # 'Lane Changes (vehicles%/step)',  # noqa: W605
-        # 'Waiting Vehicles (vehicles%/step)'  # noqa: W605
     ]
     multipliers = [1, 1, 100, 100, 100]
     ylims = [5.5, 3.5, 6.5, 3, 60]
