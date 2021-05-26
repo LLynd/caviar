@@ -15,13 +15,17 @@ class Driver:
     slow: float
     symmetry: bool
 
-    def __init__(self, change: float = .5, slow: float = .05, symmetry: bool = True):
+    def __init__(self, change: float = .5, slow: float = .4, symmetry: bool = True, defer: float = .9):
         self.change = change
         self.slow = slow
         self.symmetry = symmetry
+        self.defer = defer
 
     def set_slow(self, value):
         self.slow = value
+
+    def set_change(self, value):
+        self.change = value
 
 MaybeDriver = typing.Optional[Driver]
 
@@ -40,7 +44,6 @@ class ConventionalCar(Car):
         # Don't move if the vehicle is not fully on a single lane.
         if not self.road.isSingleLane(self):
             return self.position
-
         x, lane = self.position
         if self.velocity > 0 and random.random() < self.driver.slow:
             self.velocity -= 1
@@ -51,37 +54,52 @@ class ConventionalCar(Car):
         return self.position
 
     def _tryAvoidBlockedLane(self) -> bool:
-        #to jest placeholder by nie wywalał się program
-        return True
+        #to jest placeholder by nie wywalał się program - musi byc w autonomous i conventional
+        return False
     
     def _trySlowDownIfNextToEmergencyLane(self) -> bool:
-        return True
+        return False
 
     def _tryAvoidEmergencyLane(self) -> bool:
         x, lane = self.position
-        for xpos in range(x-10, x, 1):
-            if isinstance(self.road.getNextVehicle(position=(xpos-1, lane))[1], EmergencyCar):
-                print(self.position,'Debug') #self.EmergencyCar.giveEmergencyRadius()
-                for change in shuffled([-self.road.lane_width, self.road.lane_width]):
-                    destination = (x, lane + change)#max(2, self.velocity//2)
-                    if self._isChangePossible(destination) == True and self._isChangeSafe(destination) == True:
-                        self.position = (x, lane + change)
-                        return True
-                    else:
-                        self.velocity = self._getMaxSpeed(position=self.position)
-                        return True
+        if x > 10:
+            u = x - 10
+        else:
+            return False
+        for xpos in range(u, x, 1):
+            if isinstance(self.road.getNextVehicle(position=(xpos, lane))[1], EmergencyCar):
+                if random.random() < self.driver.defer:
+                    self.driver.set_change(1)
+                    for change in shuffled([-self.road.lane_width, self.road.lane_width]):
+                        destination = (x, lane + change)#max(2, self.velocity//2)
+                        if self._isChangePossible(destination) == True and self._isChangeSafe(destination) == True:
+                            self.position = (x, lane + change)
+                            self.driver.set_change(.5)
+                            return True
+                        else:
+                            self.velocity = self._getMaxSpeed(position=self.position)
+                            self.driver.set_change(.5)
+                            return False
+                else:
+                    return False
 
     def _tryToSpeedUpIfSpottedEmergency(self) -> bool:
         x, lane = self.position
-        for xpos in range(x-10, x, 1):
+        if x > 10:
+            u = x - 10
+        else:
+            return False
+        for xpos in range(u, x, 1):
             if isinstance(self.road.getNextVehicle(position=(xpos-1, lane))[1], EmergencyCar):
-                self.driver.set_slow(0.001)
-                self.velocity += 2
+                self.driver.set_slow(0.01)
+                self.velocity += 3
+                self.driver.set_slow(0.4)
+                return True
             else:
-                self.driver.set_slow(0.05)
-                
+                return False
+
     def _trySlowDownIfNextToBlockedLane(self) -> bool:
-        return True
+        return False
 
     def _tryAvoidObstacle(self) -> bool:
         '''
@@ -117,7 +135,7 @@ class ConventionalCar(Car):
         return False
 
     def _tryChangeEmergency(self) -> bool:
-        return True
+        return False
         '''
         Try changing the lane to create an emergency corridor.
         :return: if vehicle performed an emergency action.

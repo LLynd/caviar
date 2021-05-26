@@ -29,7 +29,6 @@ class AutonomousCar(Car):
     @classmethod
     def updateEmergencyLane(cls, value: int):
         cls.EmergencyLane = value
-        print(value)
 
     def _tryAvoidObstacle(self) -> bool:
         x, lane = self.position
