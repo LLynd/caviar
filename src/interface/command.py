@@ -38,7 +38,6 @@ def configProvider(file_path: str, cmd: str) -> typing.Dict[str, typing.Any]:
 @click.option('--penetration', default=.5, help='Penetration rate of CAV')
 @click.option('--car-length', default=2, help='Number of cells occupied by a single car')
 @click.option('--emergency', default=0, help='Emergency vehicle dispatch rate')
-@click.option('--emergency-radius', default=10, help='Set the emergency radius (detection range for conventionals)')
 # Driver options.
 @click.option('--pslow', default=.2, help='Probability a NS-model car will slow down')
 @click.option('--pchange', default=.5, help='Probability a NS-model car will change a lane')
