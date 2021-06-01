@@ -15,7 +15,7 @@ class Driver:
     slow: float
     symmetry: bool
 
-    def __init__(self, change: float = .5, slow: float = .4, symmetry: bool = True, defer: float = .9):
+    def __init__(self, change: float = .1, slow: float = .4, symmetry: bool = True, defer: float = .9):
         self.change = change
         self.slow = slow
         self.symmetry = symmetry
