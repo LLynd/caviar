@@ -60,7 +60,6 @@ def command(ctx: click.Context, **kwargs) -> None:
     penetration: float = kwargs['penetration']
     car_length: int = kwargs['car_length']
     emergency: int = kwargs['emergency']
-    emergency_radius: int = kwargs['emergency_radius']
     pslow: float = kwargs['pslow']
     pchange: float = kwargs['pchange']
     symmetry: bool = kwargs['symmetry']
