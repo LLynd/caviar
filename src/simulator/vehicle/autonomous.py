@@ -40,7 +40,7 @@ class AutonomousCar(Car):
         else:
             if self.BlockedLane == None:
                 self.updateBlockedLane(lane)
-                print(type(self.BlockedLane))
+                #print(type(self.BlockedLane))
         best_change = 0
         best_limit = self._getMaxSpeed(position=self.position)
         for change in shuffled([-self.road.lane_width, self.road.lane_width]):
