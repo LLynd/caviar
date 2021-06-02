@@ -15,7 +15,7 @@ class Driver:
     slow: float
     symmetry: bool
 
-    def __init__(self, change: float = .1, slow: float = .4, symmetry: bool = True, defer: float = .9):
+    def __init__(self, change: float = .3, slow: float = .4, symmetry: bool = True, defer: float = .9):
         self.change = change
         self.slow = slow
         self.symmetry = symmetry
@@ -74,18 +74,18 @@ class ConventionalCar(Car):
                         destination = (x, lane + change)#max(2, self.velocity//2)
                         if self._isChangePossible(destination) == True and self._isChangeSafe(destination) == True:
                             self.position = (x, lane + change)
-                            self.driver.set_change(.5)
+                            self.driver.set_change(.3)
                             return True
                         else:
                             self.velocity = self._getMaxSpeed(position=self.position)
-                            self.driver.set_change(.5)
+                            self.driver.set_change(.3)
                             return False
                 else:
                     return False
 
     def _tryToSpeedUpIfSpottedEmergency(self) -> bool:
         x, lane = self.position
-        if x > 10:
+        if x > 10: #10 bo to emergency radius, mozna to polaczyc w przyszlosci z pojazdem emergency
             u = x - 10
         else:
             return False
