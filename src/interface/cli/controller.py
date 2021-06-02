@@ -90,12 +90,24 @@ class Controller:
                 if collector.travel_emergency:
                     ne = sum(collector.travel_emergency)
                 for i in range(collector._travelLimit):
-                    df = df.append({'x': i, 'y': collector.travel[i] / n * 100,
-                                    'type': 'All'}, ignore_index=True)
-                    df = df.append({'x': i, 'y': collector.travel_autonomous[i] / na * 100,
-                                    'type': 'Autonomous'}, ignore_index=True)
-                    df = df.append({'x': i, 'y': collector.travel_conventional[i] / nc * 100,
-                                    'type': 'Conventional'}, ignore_index=True)
+                    if not n == 0:
+                        df = df.append({'x': i, 'y': collector.travel[i] / n * 100,
+                                        'type': 'All'}, ignore_index=True)
+                    else:
+                        df = df.append({'x': i, 'y': 0,
+                                        'type': 'All'}, ignore_index=True)
+                    if not na == 0:
+                        df = df.append({'x': i, 'y': collector.travel_autonomous[i] / na * 100,
+                                        'type': 'Autonomous'}, ignore_index=True)
+                    else:
+                        df = df.append({'x': i, 'y': 0,
+                                        'type': 'Autonomous'}, ignore_index=True)
+                    if not nc == 0:
+                        df = df.append({'x': i, 'y': collector.travel_conventional[i] / nc * 100,
+                                        'type': 'Conventional'}, ignore_index=True)
+                    else:
+                         df = df.append({'x': i, 'y': 0,
+                                        'type': 'Conventional'}, ignore_index=True)
                     if not ne == 0:
                         df = df.append({'x': i, 'y': collector.travel_emergency[i] / ne * 100,
                                         'type': 'Emergency'}, ignore_index=True)
