@@ -24,7 +24,6 @@ def make_plot(df: pd.DataFrame, key: str, ylabel: str, multiplier: int, ylim: in
     data_autonomous = df[['x', key_autonomous]] \
         .rename(columns={key_autonomous: 'y'})
     data_autonomous['type'] = 'Autonomus'
-    
     data = data_all.append(data_conventional).append(data_autonomous)
     data['y'] *= multiplier
 
@@ -44,6 +43,9 @@ def make_plot(df: pd.DataFrame, key: str, ylabel: str, multiplier: int, ylim: in
     f.tight_layout()
     g = sns.lineplot(x='x', y='y', hue='type', data=data)
     # Set axis title.
+    if max(df[key_conventional])*multiplier >= ylim or max(df[key_autonomous])*multiplier >= ylim:
+       ylim = max(max(df[key_conventional])*multiplier, max(df[key_autonomous])*multiplier) + 1
+   
     g.set(xlabel='Market Penetration Rate (%)', ylabel=ylabel, ylim=(0., ylim))  # noqa: W605
     # Remove legend title.
     handles, labels = g.get_legend_handles_labels()
