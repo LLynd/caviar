@@ -96,7 +96,7 @@ class Controller:
                                     'type': 'Autonomous'}, ignore_index=True)
                     df = df.append({'x': i, 'y': collector.travel_conventional[i] / nc * 100,
                                     'type': 'Conventional'}, ignore_index=True)
-                    if collector.travel_emergency:
+                    if not ne == 0:
                         df = df.append({'x': i, 'y': collector.travel_emergency[i] / ne * 100,
                                         'type': 'Emergency'}, ignore_index=True)
 
