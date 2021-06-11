@@ -84,3 +84,8 @@ For example to set a list of market penetration rates
 ```sh
 (venv) $ python src/main.py exp --penetration-list [0.1,0.3,0.5,0.7,0.9]
 ```
+
+### Changes Report
+You can read a report describing the changes in this fork and our experiments at:
+
+https://drive.google.com/file/d/1RKqVRAmWiHqu7a_4HAhg7lrTvW5qTHvN/view?usp=sharing
