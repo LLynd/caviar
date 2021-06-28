@@ -5,7 +5,9 @@ import click_config_file
 import yaml
 
 from interface.obstacle import ObstacleParamType, ObstacleValue, addObstacle
-from interface.experiment_list import PenListParamType
+from interface.experiment_lists import PenListParamType
+from interface.experiment_lists import DisListParamType
+from interface.experiment_lists import EmergListParamType
 from interface.gui.controller import Controller as GUIController
 from interface.cli.controller import Controller as CLIController
 from interface.exp.controller import experiment
@@ -136,6 +138,8 @@ def cli(ctx: click.Context, all_statistics: bool, velocity: bool, heatmap: bool,
 @click.option('--num', default=10, help = 'Number of simulations in one experiment for every penetration rate')
 @click.option('--steps', default=2000, help='Number of simulation steps to run')
 @click.option('--skip', default=100, help='Skip first n steps when gathering statistics')
+@click.option('--dispatch-list', default ='2, 4, 6', type=DisListParamType(), help = 'List of maximum numbers of cars dispatched each step in the experiment')
+@click.option('--emergency-list', default ='300, 600, 900', type=EmergListParamType(), help = 'Emergency vehicle dispatch rates used in the experiment')
 @click.pass_context
 def exp(ctx: click.Context, **kwargs):
     experiment(sim_info, **kwargs)
