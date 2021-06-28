@@ -84,7 +84,7 @@ For example to set a list of market penetration rates
 ```sh
 (venv) $ python src/main.py exp --penetration-list [0.1,0.3,0.5,0.7,0.9]
 ```
-You can run multiple experiments by setting a dispatch rate list or emergency vehicle dispatch list (or both)
+You can run multiple experiments by setting a dispatch rate list (`--dispatch-list`) or emergency vehicle dispatch list (`--emergency-list`) or both by running
 ```sh
 (venv) $ python src/main.py exp --dispatch-list [2,4,6] --emergency-list [10,100,1000]
 ```
