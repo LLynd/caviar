@@ -42,36 +42,35 @@ def experiment(sim_info, **kwargs):
     name = str(date.date()) + '__' + str(datetime.time(date.hour, date.minute)).replace(':', '-')
     dir_name = os.path.join('out/', name)
     os.mkdir('./' + dir_name)
-    
-   
+
     #ogolny informer
     informer(dir_name, steps = steps, skip = skip, num = num, penetration = penetration_list, dispatch = dispatch_list, emergency = emergency_list, **sim_info)
 
     #3 petle for
-    i = 0
-    for d in dispatch_list:
-        
-        for em in emergency_list:
-            
+    for em in emergency_list:
+        os.mkdir('./' + dir_name + '/' + str(em) + '_emergency')
+        for d in dispatch_list:
+            dir_sim = os.path.join(dir_name + '/' + str(em) + '_emergency' + '/' + str(d) + '_dispatch')
+            os.mkdir('./' + dir_sim)
+            informer(dir_sim, steps=steps, skip=skip, num=num, penetration=penetration_list, dispatch=d,
+                     emergency=em, **sim_info)
             for p in penetration_list:
                 penetration = int(p * 100)
-                prefix = f'{i}_p{penetration:02d}'
+                prefix = f'p{penetration:02d}'
                 for i in range(num):
                     os.system(f'python src/main.py --penetration {p} --length {length} --lanes {lanes} --emergency-lane {emergency_lane} '
                               f'--max-speed {max_speed} {obstacles} --density {density} --dispatch {d} '
                               f'--car-length {car_length} --emergency {em} --pslow {pslow} --pchange {pchange} '
                               f'{symmetry} --limit {limit} {seed} cli --steps {steps} --skip {skip} '
-                              f'-o {dir_name} --prefix="{prefix}__{i:02d}" --no-charts --travel --heatmap')
-        
-                os.system(f'python src/charts/heatmap.py -o {dir_name}  -p {prefix}.traffic -s 5 {dir_name}/{prefix}__*_traffic.csv')
-                os.system(f'python src/charts/travel.py -o {dir_name} -p {prefix}.travel'
-                          f' {dir_name}/{prefix}__*_travel.csv')
-                os.system(f'python src/charts/average.py -o {dir_name} -p {prefix}.average'
-                          f' -x {penetration} {dir_name}/{prefix}__*_average.csv')
-        
-            os.system(f'python src/charts/average.py --output={dir_name} --prefix=average {dir_name}/*.average.csv')
-            os.system(f'python src/charts/penetration.py --output={dir_name} --prefix=average {dir_name}/average.csv')
+                              f'-o {dir_sim} --prefix="{prefix}__{i:02d}" --no-charts --travel --heatmap')
+
+                os.system(f'python src/charts/heatmap.py -o {dir_sim}  -p {prefix}.traffic -s 5 {dir_sim}/{prefix}__*_traffic.csv')
+                os.system(f'python src/charts/travel.py -o {dir_sim} -p {prefix}.travel'
+                          f' {dir_sim}/{prefix}__*_travel.csv')
+                os.system(f'python src/charts/average.py -o {dir_sim} -p {prefix}.average'
+                          f' -x {penetration} {dir_sim}/{prefix}__*_average.csv')
+
+            os.system(f'python src/charts/average.py --output={dir_sim} --prefix=average {dir_sim}/*.average.csv')
+            os.system(f'python src/charts/penetration.py --output={dir_sim} --prefix=average {dir_sim}/average.csv')
             if not em == 0:
-                os.system(f'python src/charts/penetration_emergency.py --output={dir_name} --prefix=average_emergency {dir_name}/average.csv')
-            
-            i += 1
+                os.system(f'python src/charts/penetration_emergency.py --output={dir_sim} --prefix=average_emergency {dir_sim}/average.csv')
