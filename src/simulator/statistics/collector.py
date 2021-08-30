@@ -78,7 +78,7 @@ class Collector(Hook):
 
     @property
     def _travelLimit(self) -> int:
-        return self._road.length * 2
+        return int(self._road.length * 7.5)
 
     def _initVelocity(self):
         self.velocity = \
