@@ -88,7 +88,7 @@ def main(output: typing.Optional[str], prefix: str, table: bool, file):
     key = 'travel'
     ylabel = 'Travel time (steps)'  # noqa: W605
     multiplier = 1
-    ylim = 400
+    ylim = 750
     make_plot(df, key, ylabel, multiplier, ylim, table, output, prefix, emergency=False)
     make_plot(df, key, ylabel, multiplier, ylim, table, output, prefix, emergency=True)
 
